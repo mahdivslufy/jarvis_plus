@@ -29,6 +29,14 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Setup llama.cpp source for llama_cpp_dart
+        run: |
+          LLAMA_DIR=$(find /home/runner/.pub-cache/hosted/pub.dev/ -maxdepth 2 -type d -name "llama_cpp_dart*" | head -n 1)
+          if [ -d "$LLAMA_DIR/src" ]; then
+            echo "Cloning llama.cpp submodule into $LLAMA_DIR/src/llama.cpp"
+            git clone --depth 1 --recurse-submodules https://github.com/ggerganov/llama.cpp.git "$LLAMA_DIR/src/llama.cpp"
+          fi
+
       - name: Build APK
         run: flutter build apk --release
 
