@@ -14,7 +14,7 @@ class AiEngineService {
   String? get currentModelPath => _currentModelPath;
 
   /// مقداردهی اولیه و بارگذاری مدل محلی از حافظه داخلی گوشی
-  Future<bool> loadModel(String modelPath, {int contextSize = 1024}) async {
+  Future<bool> loadModel(String modelPath, {int contextSize = 512}) async {
     final file = File(modelPath);
     if (!await file.exists()) {
       debugPrint("خطا: فایل مدل در مسیر یافت نشد: $modelPath");
@@ -57,8 +57,8 @@ class AiEngineService {
 
       final contextParams = ContextParams()
         ..nCtx = contextSize
-        ..nBatch = 256
-        ..nUbatch = 256
+        ..nBatch = 128
+        ..nUbatch = 128
         ..offloadKqv = false
         ..nThreads = optimalThreads
         ..nThreadsBatch = optimalThreads
@@ -118,7 +118,8 @@ class AiEngineService {
         }
         yield token;
       }
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint("خطا در تولید متن: $e\n$stack");
       yield "\n[خطا در پردازش On-Device: $e]";
     }
   }
