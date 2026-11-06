@@ -184,13 +184,13 @@ class _ModelStoreScreenState extends State<ModelStoreScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.15),
+                            color: const Color(0xFF38BDF8).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.green, width: 0.8),
+                            border: Border.all(color: const Color(0xFF38BDF8), width: 0.8),
                           ),
-                          child: const Text(
-                            "رایگان",
-                            style: TextStyle(color: Colors.greenAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                          child: Text(
+                            model.category,
+                            style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 10.5, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -199,6 +199,26 @@ class _ModelStoreScreenState extends State<ModelStoreScreen> {
                     Text(
                       model.description,
                       style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.45),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F172A).withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.phone_android, size: 14, color: Color(0xFF34D399)),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              "دیوایس‌های سازگار: ${model.supportedDevices}",
+                              style: const TextStyle(color: Color(0xFF34D399), fontSize: 11, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Row(

@@ -12,6 +12,8 @@ class AiModelInfo {
   final String downloadUrl;
   final int sizeInBytes;
   final String requiredRam;
+  final String supportedDevices; // دستگاه‌های پیشنهادی و حداقل سخت‌افزار
+  final String category; // دسته‌بندی مدل: فوق‌سبک، استاندارد، قدرتمند، استدلال سنگین
 
   const AiModelInfo({
     required this.id,
@@ -21,9 +23,16 @@ class AiModelInfo {
     required this.downloadUrl,
     required this.sizeInBytes,
     required this.requiredRam,
+    required this.supportedDevices,
+    required this.category,
   });
 
-  String get sizeInMb => "${(sizeInBytes / (1024 * 1024)).toStringAsFixed(0)} مگابایت";
+  String get sizeInMb {
+    if (sizeInBytes >= 1024 * 1024 * 1024) {
+      return "${(sizeInBytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} گیگابایت";
+    }
+    return "${(sizeInBytes / (1024 * 1024)).toStringAsFixed(0)} مگابایت";
+  }
 }
 
 class ModelManagerService {
@@ -41,35 +50,84 @@ class ModelManagerService {
   CancelToken? _cancelToken;
   String? lastError;
 
-  /// فهرست مدل‌های پیشنهادی که روی هاستینگ ۱۰۰٪ رایگان و بدون محدودیت پهنای باند Hugging Face قرار دارند
+  /// فهرست جامع مدل‌های هوش مصنوعی کوانتیزه (GGUF Q4_K_M) به همراه مشخصات دیوایس
   static const List<AiModelInfo> catalog = [
     AiModelInfo(
       id: "qwen_05b",
       title: "جارویس لایت (Qwen 2.5 0.5B)",
-      description: "فوق‌العاده سریع و سبک، مناسب برای تمام گوشی‌ها با رم ۳ گیگابایت به بالا. درک عالی فارسی.",
+      description: "فوق‌العاده سریع و کم‌مصرف. پاسخگویی آنی برای کارهای روزمره، چت و پیامک بدون داغ کردن گوشی.",
       fileName: "qwen2.5-0.5b-instruct-q4_k_m.gguf",
-      // لینک مستقیم مخزن رایگان هاگینگ‌فیس بدون یک ریال هزینه سرور
       downloadUrl: "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
       sizeInBytes: 397000000,
-      requiredRam: "۳ گیگابایت",
+      requiredRam: "۲ تا ۳ گیگابایت",
+      supportedDevices: "تمام گوشی‌های اقتصادی (Galaxy A04/A14، ردمی 9/10/12C و قدیمی‌تر)",
+      category: "فوق‌سبک و اقتصادی",
+    ),
+    AiModelInfo(
+      id: "llama_1b",
+      title: "متا لاما لایت (Llama 3.2 1B)",
+      description: "مدل مدرن متای آمریکا با درک منطقی بالا، خلاصه کردن متن‌های انگلیسی و نگارش سریع فارسی.",
+      fileName: "Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+      downloadUrl: "https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_K_M.gguf",
+      sizeInBytes: 807694464,
+      requiredRam: "۳ تا ۴ گیگابایت",
+      supportedDevices: "گوشی‌های میان‌رده پایه (Galaxy A24/A34، ردمی نوت ۱۱/۱۲، پوکو M5)",
+      category: "سبک و سریع",
     ),
     AiModelInfo(
       id: "qwen_15b",
       title: "جارویس پرو (Qwen 2.5 1.5B)",
-      description: "مدل هوشمند اصلی با تسلط کامل بر انشا، تحلیل، شعر و ترجمه دقیق فارسی.",
+      description: "تعادل طلایی سرعت و هوش؛ تسلط عالی بر ادبیات فارسی، انشا، بازنویسی، ترجمه و مقاله‌نویسی.",
       fileName: "qwen2.5-1.5b-instruct-q4_k_m.gguf",
       downloadUrl: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
       sizeInBytes: 986000000,
-      requiredRam: "۴ تا ۶ گیگابایت",
+      requiredRam: "۴ گیگابایت به بالا",
+      supportedDevices: "میان‌رده‌های محبوب (Galaxy A54/A55، ردمی نوت ۱۲ پرو/۱۳، پوکو X5)",
+      category: "استاندارد (پیشنهادی)",
     ),
     AiModelInfo(
       id: "deepseek_15b",
-      title: "جارویس استدلال (DeepSeek-R1 1.5B)",
-      description: "مدل حل مسائل ریاضی، منطق، کدنویسی و تفکر گام‌به‌گام به صورت آفلاین.",
+      title: "دیپ‌سیک استدلال (DeepSeek-R1 1.5B)",
+      description: "دارای زنجیره تفکر عمیق (<think>)؛ حل مسائل ریاضی، منطق، کدنویسی پایتون و پاسخ‌های گام‌به‌گام.",
       fileName: "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
       downloadUrl: "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
       sizeInBytes: 1120000000,
-      requiredRam: "۶ گیگابایت به بالا",
+      requiredRam: "۴ تا ۶ گیگابایت",
+      supportedDevices: "میان‌رده‌ها و بالارده‌ها (Galaxy A54/S21 FE، پوکو F4/X6، شیائومی 12T)",
+      category: "استدلال و برنامه‌نویسی",
+    ),
+    AiModelInfo(
+      id: "gemma_2b",
+      title: "گوگل گما ۲ (Gemma 2 2B Instruct)",
+      description: "شاهکار پردازش زبانی گوگل؛ معماری پیشرفته با کیفیت در حد مدل‌های بزرگ‌تر در درک مفاهیم علمی.",
+      fileName: "gemma-2-2b-it-Q4_K_M.gguf",
+      downloadUrl: "https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf",
+      sizeInBytes: 1708582752,
+      requiredRam: "۶ گیگابایت",
+      supportedDevices: "میان‌رده‌های قوی (Galaxy A55، پوکو X6 Pro، ردمی نوت 13 پرو پلاس)",
+      category: "گوگل و مفاهیم علمی",
+    ),
+    AiModelInfo(
+      id: "qwen_3b",
+      title: "جارویس مستر (Qwen 2.5 3B)",
+      description: "بسیار قدرتمند و دقیق با غنای لغوی بالا؛ مناسب برای کارهای تخصصی، دانشگاهی و نگارش حرفه‌ای.",
+      fileName: "qwen2.5-3b-instruct-q4_k_m.gguf",
+      downloadUrl: "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf",
+      sizeInBytes: 2104932768,
+      requiredRam: "۶ تا ۸ گیگابایت",
+      supportedDevices: "قاتل پرچمدار و پرچمداران (Galaxy S22/S23 FE، شیائومی 13T، پوکو F5/F6)",
+      category: "فوق‌العاده قدرتمند",
+    ),
+    AiModelInfo(
+      id: "deepseek_7b",
+      title: "دیپ‌سیک اولترا (DeepSeek-R1 7B)",
+      description: "نهایت قدرت هوش مصنوعی تفکر و استدلال روی موبایل. مناسب برای سنگین‌ترین مسائل علمی و برنامه‌نویسی.",
+      fileName: "DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf",
+      downloadUrl: "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf",
+      sizeInBytes: 4683073504,
+      requiredRam: "۸ تا ۱۲ گیگابایت به بالا",
+      supportedDevices: "پرچمداران قدرتمند (Galaxy S23/S24/S25 Ultra، شیائومی 13/14 Pro، پوکو F6 Pro)",
+      category: "نهایت قدرت (پرچمدار)",
     ),
   ];
 
