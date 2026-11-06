@@ -8,11 +8,56 @@ import 'screens/chat_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // گرفتن تمام خطاهای فلاتر و رندر صفحه خطا در صورت کرش
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint("Flutter Error: ${details.exception}");
+  };
+
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFF1E1E2E),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "⚠️ خطای اجرای رابط کاربری",
+                    style: TextStyle(color: Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(
+                    details.exceptionAsString(),
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(
+                    details.stack.toString(),
+                    style: const TextStyle(color: Colors.white60, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
   final aiEngine = AiEngineService();
   final modelManager = ModelManagerService();
   final billingService = MyketBillingService();
 
-  await billingService.initBilling();
+  try {
+    await billingService.initBilling();
+  } catch (e) {
+    debugPrint("Billing init error: $e");
+  }
 
   runApp(
     JarvisPlusApp(

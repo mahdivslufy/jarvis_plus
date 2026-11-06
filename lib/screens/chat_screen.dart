@@ -24,7 +24,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> _messages = [];
   final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = TextEditingController() as dynamic ?? ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _isGenerating = false;
   String _selectedPersona = "دستیار همه‌فن‌حریف";
 
