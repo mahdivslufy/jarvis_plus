@@ -13,7 +13,7 @@ class AiEngineService {
   String? get currentModelPath => _currentModelPath;
 
   /// مقداردهی اولیه و بارگذاری مدل محلی از حافظه داخلی گوشی
-  Future<bool> loadModel(String modelPath, {int contextSize = 2048}) async {
+  Future<bool> loadModel(String modelPath, {int contextSize = 1024}) async {
     final file = File(modelPath);
     if (!await file.exists()) {
       debugPrint("خطا: فایل مدل در مسیر یافت نشد: $modelPath");
@@ -25,13 +25,21 @@ class AiEngineService {
         unloadModel();
       }
 
-      // تعیین تعداد رشته‌های پردازشی بر اساس سخت‌افزار دستگاه
+      // تعیین تعداد رشته‌های پردازشی بر اساس سخت‌افزار دستگاه (محتاطانه برای پایداری روی موبایل)
       final cpuCores = Platform.numberOfProcessors;
-      final optimalThreads = cpuCores > 4 ? cpuCores - 2 : (cpuCores > 2 ? 2 : 1);
+      final optimalThreads = cpuCores > 4 ? 4 : (cpuCores > 2 ? 2 : 1);
 
-      final modelParams = ModelParams();
+      // در اندروید باید GPU Offload حتماً 0 باشد چون کتابخانه برای پردازنده CPU (ARM Neon) کامپایل شده است
+      final modelParams = ModelParams()
+        ..nGpuLayers = 0
+        ..useMemorymap = true
+        ..useMemoryLock = false;
+
       final contextParams = ContextParams()
         ..nCtx = contextSize
+        ..nBatch = 256
+        ..nUbatch = 256
+        ..offloadKqv = false
         ..nThreads = optimalThreads
         ..nThreadsBatch = optimalThreads
         ..nPredict = -1; // تولید بدون محدودیت توکن
