@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:llama_cpp_dart/llama_cpp_dart.dart';
 import '../models/chat_message.dart';
@@ -23,6 +24,25 @@ class AiEngineService {
     try {
       if (_llama != null) {
         unloadModel();
+      }
+
+      // لود دستی کتابخانه‌های پایه ggml قبل از لود llama در حافظه پروسه Dart
+      if (Platform.isAndroid) {
+        try {
+          DynamicLibrary.open("libomp.so");
+        } catch (_) {}
+        try {
+          DynamicLibrary.open("libggml-base.so");
+        } catch (_) {}
+        try {
+          DynamicLibrary.open("libggml-cpu.so");
+        } catch (_) {}
+        try {
+          DynamicLibrary.open("libggml.so");
+        } catch (_) {}
+        try {
+          DynamicLibrary.open("libllama.so");
+        } catch (_) {}
       }
 
       // تعیین تعداد رشته‌های پردازشی بر اساس سخت‌افزار دستگاه (محتاطانه برای پایداری روی موبایل)
@@ -50,8 +70,8 @@ class AiEngineService {
 
       debugPrint("مدل با موفقیت لود شد: $modelPath با $optimalThreads رشته پردازشی");
       return true;
-    } catch (e) {
-      debugPrint("خطا در بارگذاری مدل آفلاین: $e");
+    } catch (e, stack) {
+      debugPrint("خطا در بارگذاری مدل آفلاین: $e\n$stack");
       _isModelLoaded = false;
       return false;
     }
