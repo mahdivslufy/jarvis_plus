@@ -11,7 +11,6 @@ class AiModelInfo {
   final String fileName;
   final String downloadUrl;
   final int sizeInBytes;
-  final bool isPremium;
   final String requiredRam;
 
   const AiModelInfo({
@@ -21,7 +20,6 @@ class AiModelInfo {
     required this.fileName,
     required this.downloadUrl,
     required this.sizeInBytes,
-    required this.isPremium,
     required this.requiredRam,
   });
 
@@ -53,7 +51,6 @@ class ModelManagerService {
       // لینک مستقیم مخزن رایگان هاگینگ‌فیس بدون یک ریال هزینه سرور
       downloadUrl: "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
       sizeInBytes: 397000000,
-      isPremium: false,
       requiredRam: "۳ گیگابایت",
     ),
     AiModelInfo(
@@ -63,7 +60,6 @@ class ModelManagerService {
       fileName: "qwen2.5-1.5b-instruct-q4_k_m.gguf",
       downloadUrl: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
       sizeInBytes: 986000000,
-      isPremium: true,
       requiredRam: "۴ تا ۶ گیگابایت",
     ),
     AiModelInfo(
@@ -73,7 +69,6 @@ class ModelManagerService {
       fileName: "DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
       downloadUrl: "https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf",
       sizeInBytes: 1120000000,
-      isPremium: true,
       requiredRam: "۶ گیگابایت به بالا",
     ),
   ];

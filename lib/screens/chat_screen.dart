@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../services/ai_engine_service.dart';
 import '../services/model_manager_service.dart';
-import '../services/myket_billing_service.dart';
 import 'model_store_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   final AiEngineService aiEngine;
   final ModelManagerService modelManager;
-  final MyketBillingService billingService;
 
   const ChatScreen({
     super.key,
     required this.aiEngine,
     required this.modelManager,
-    required this.billingService,
   });
 
   @override
@@ -155,7 +152,6 @@ class _ChatScreenState extends State<ChatScreen> {
         builder: (_) => ModelStoreScreen(
           modelManager: widget.modelManager,
           aiEngine: widget.aiEngine,
-          billingService: widget.billingService,
         ),
       ),
     );

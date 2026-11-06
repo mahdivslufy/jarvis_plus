@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'services/ai_engine_service.dart';
 import 'services/model_manager_service.dart';
-import 'services/myket_billing_service.dart';
 import 'screens/chat_screen.dart';
 
 void main() async {
@@ -51,19 +50,11 @@ void main() async {
 
   final aiEngine = AiEngineService();
   final modelManager = ModelManagerService();
-  final billingService = MyketBillingService();
-
-  try {
-    await billingService.initBilling();
-  } catch (e) {
-    debugPrint("Billing init error: $e");
-  }
 
   runApp(
     JarvisPlusApp(
       aiEngine: aiEngine,
       modelManager: modelManager,
-      billingService: billingService,
     ),
   );
 }
@@ -71,13 +62,11 @@ void main() async {
 class JarvisPlusApp extends StatelessWidget {
   final AiEngineService aiEngine;
   final ModelManagerService modelManager;
-  final MyketBillingService billingService;
 
   const JarvisPlusApp({
     super.key,
     required this.aiEngine,
     required this.modelManager,
-    required this.billingService,
   });
 
   @override
@@ -109,7 +98,6 @@ class JarvisPlusApp extends StatelessWidget {
       home: ChatScreen(
         aiEngine: aiEngine,
         modelManager: modelManager,
-        billingService: billingService,
       ),
     );
   }
