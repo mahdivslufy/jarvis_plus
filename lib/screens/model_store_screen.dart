@@ -70,12 +70,25 @@ class _ModelStoreScreenState extends State<ModelStoreScreen> {
     });
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("مدل ${model.title} با موفقیت دانلود شد و آماده استفاده است."),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("مدل ${model.title} با موفقیت دانلود شد و آماده استفاده است."),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        final err = widget.modelManager.lastError ?? "خطا در اتصال به اینترنت";
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("دانلود ناموفق بود: $err"),
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 

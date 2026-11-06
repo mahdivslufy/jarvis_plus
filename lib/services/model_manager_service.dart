@@ -29,8 +29,19 @@ class AiModelInfo {
 }
 
 class ModelManagerService {
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(minutes: 60),
+      followRedirects: true,
+      maxRedirects: 5,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+      },
+    ),
+  );
   CancelToken? _cancelToken;
+  String? lastError;
 
   /// فهرست مدل‌های پیشنهادی که روی هاستینگ ۱۰۰٪ رایگان و بدون محدودیت پهنای باند Hugging Face قرار دارند
   static const List<AiModelInfo> catalog = [
@@ -158,8 +169,10 @@ class ModelManagerService {
     } catch (e) {
       if (CancelToken.isCancel(e as dynamic)) {
         debugPrint("دانلود توسط کاربر متوقف شد");
+        lastError = "دانلود متوقف شد";
       } else {
         debugPrint("خطا در دانلود مدل: $e");
+        lastError = e.toString();
       }
       return false;
     }
