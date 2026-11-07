@@ -33,8 +33,13 @@ jobs:
         run: |
           LLAMA_DIR=$(find /home/runner/.pub-cache/hosted/pub.dev/ -maxdepth 2 -type d -name "llama_cpp_dart*" | head -n 1)
           if [ -d "$LLAMA_DIR/src" ]; then
-            echo "Cloning llama.cpp submodule into $LLAMA_DIR/src/llama.cpp"
-            git clone --depth 1 --recurse-submodules https://github.com/ggerganov/llama.cpp.git "$LLAMA_DIR/src/llama.cpp"
+            echo "Cloning compatible llama.cpp commit 42ae10bb into $LLAMA_DIR/src/llama.cpp"
+            rm -rf "$LLAMA_DIR/src/llama.cpp"
+            git clone https://github.com/ggerganov/llama.cpp.git "$LLAMA_DIR/src/llama.cpp"
+            cd "$LLAMA_DIR/src/llama.cpp"
+            git checkout 42ae10bbcd7b56f29a302c86796542a6dadf46c9
+            git submodule update --init --recursive
+            cd -
           fi
           # Patch memory safety bug in llama_cpp_dart 0.0.9 batch.seq_id double free
           sed -i 's/calloc\.free(batch\.seq_id\[i\]);/\/\/ calloc.free(batch.seq_id[i]);/g' "$LLAMA_DIR/lib/src/llama.dart" || true
